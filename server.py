@@ -2,6 +2,7 @@ import socket
 import os
 import threading
 import datetime
+import urllib.parse
 
 HOST = 'localhost'
 PORT = 8000
@@ -16,7 +17,7 @@ def handle_request(client_socket, client_address):
     # Analisa a requisição para determinar o caminho solicitado
     request_parts = request.split(' ')
     method = request_parts[0]
-    path = request_parts[1]
+    path = urllib.parse.unquote(request_parts[1])
 
     if method == 'GET':
         if path == '/':
@@ -27,9 +28,10 @@ def handle_request(client_socket, client_address):
             for file in files:
                 file_path = os.path.join(DIRECTORY, file)
                 if os.path.isdir(file_path):
-                    file_link = f'<a href="{file}/">{file}/</a><br>'
+                    directory_name = file.replace(' ', '_')  # Substituir espaços por underlines
+                    file_link = f'<a href="/{directory_name}/">{file}/</a><br>'
                 else:
-                    file_link = f'<a href="{file}">{file}</a><br>'
+                    file_link = f'<a href="/{file}">{file}</a><br>'
                 response += file_link
 
             # Adiciona a reprodução automática do áudio
