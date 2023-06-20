@@ -66,17 +66,16 @@ def handle_request(client_socket, client_address):
                     file_data = file.read()
                 response = 'HTTP/1.1 200 OK\nContent-Type: application/octet-stream\n\n'
                 response_binary = bytes(response, 'utf-8') + file_data
+                client_socket.sendall(response_binary)
+                client_socket.close()
+                return
             elif os.path.isdir(file_path):
                 # Retorna a lista de arquivos e diretórios dentro do diretório solicitado
                 files = os.listdir(file_path)
                 response = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
                 response += f'<h1>Arquivos no diretório {path}:</h1>\n'
                 for file in files:
-                    file_path = os.path.join(file_path, file)
-                    if os.path.isdir(file_path):
-                        file_link = f'<a href="{os.path.join(path, file)}/">{file}/</a><br>'
-                    else:
-                        file_link = f'<a href="{os.path.join(path, file)}">{file}</a><br>'
+                    file_link = f'<a href="{os.path.join(path, file)}">{file}</a><br>'
                     response += file_link
             else:
                 response = 'HTTP/1.1 404 Not Found\nContent-Type: text/plain\n\n'
