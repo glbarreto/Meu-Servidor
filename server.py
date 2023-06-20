@@ -91,7 +91,6 @@ def handle_request(client_socket, client_address):
     client_socket.sendall(response_bytes)
     client_socket.close()
 
-
 # Função principal para iniciar o servidor
 def run_server():
     # Cria o socket do servidor
@@ -109,7 +108,6 @@ def run_server():
         # Cria uma thread para tratar a requisição do cliente
         client_thread = threading.Thread(target=handle_request, args=(client_socket, client_address))
         client_thread.start()
-
 
 if __name__ == '__main__':
     run_server()
