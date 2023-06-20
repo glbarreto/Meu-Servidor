@@ -53,7 +53,6 @@ def handle_request(client_socket, client_address):
             resposta = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
             resposta += 'hello\n'
         else:
-            # Tenta ler o arquivo solicitado
             try:
                 with open(DIRECTORY + caminho, 'rb') as file:
                     file_data = file.read()
@@ -65,29 +64,21 @@ def handle_request(client_socket, client_address):
             except FileNotFoundError:
                 resposta = 'HTTP/1.1 404 Not Found\nContent-Type: text/plain\n\n'
                 resposta += '404 Not Found\n'
-    else:
-        resposta = 'HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\n\n'
-        resposta += '501 Not Implemented\n'
 
-    # Envia a resposta ao cliente
     response_bytes = bytes(resposta, 'utf-8')
     client_socket.sendall(response_bytes)
     client_socket.close()
 
 def rodar_server():
-    # Cria o socket do servidor
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((HOST, PORT))
     server_socket.listen(1)
     print(f'Server listening on {HOST}:{PORT}')
 
-    # Loop principal para aceitar conexões dos clientes
     while True:
         # Aguarda uma conexão
         client_socket, client_address = server_socket.accept()
-
-        # Cria uma thread para tratar a requisição do cliente
         client_thread = threading.Thread(target=handle_request, args=(client_socket, client_address))
         client_thread.start()
 
