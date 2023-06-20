@@ -10,79 +10,78 @@ DIRECTORY = 'D:\\User\\Desktop\\2023-1\\Redes\\Descubra'  # Diretório que será
 # Função para tratar as requisições dos clientes
 def handle_request(client_socket, client_address):
     # Recebe a requisição do cliente
-    request = client_socket.recv(1024).decode('utf-8')
+    requisicoes = client_socket.recv(1024).decode('utf-8')
     print(f'Received request from {client_address[0]}:{client_address[1]}')
 
     # Analisa a requisição para determinar o caminho solicitado
-    request_parts = request.split(' ')
-    method = request_parts[0]
-    path = request_parts[1]
+    request_parts = requisicoes.split(' ')
+    metodo = request_parts[0]
+    caminho = request_parts[1]
 
-    if method == 'GET':
-        if path == '/':
+    if metodo == 'GET':
+        if caminho == '/':
             # Retorna a página HTML com o áudio MP3 e o trecho de JavaScript para reprodução automática
-            response = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
-            response += '<!DOCTYPE html>\n<html>\n<head>\n<title>Meu Servidor</title>\n<style>\n'
-            files = os.listdir(DIRECTORY)
-            response = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
-            response += '<h1>Arquivos no diretorio:</h1>\n'
-            for file in files:
+            resposta = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
+            resposta += '<!DOCTYPE html>\n<html>\n<head>\n<title>Meu Servidor</title>\n<style>\n'
+            arquivos = os.listdir(DIRECTORY)
+            resposta = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
+            resposta += '<h1>Arquivos no diretorio:</h1>\n'
+            for file in arquivos:
                 file_path = os.path.join(DIRECTORY, file)
                 if os.path.isdir(file_path):
                     file_link = f'<a href="{file}/">{file}/</a><br>'
                 else:
                     file_link = f'<a href="{file}">{file}</a><br>'
-                response += file_link
-            response += '</style>\n<script>\n'
-            response += 'window.addEventListener("DOMContentLoaded", function() {\n'
-            response += '  var audio = document.getElementById("myAudio");\n'
-            response += '  audio.play();\n'
-            response += '});\n'
-            response += '</script>\n</head>\n<body>\n<h1>You got...</h1>\n'
-            response += '<audio id="myAudio" controls autoplay>\n'
-            response += '<source src="audio.mp3" type="audio/mpeg">\n'
-            response += '</audio>\n</body>\n</html>'
-        elif path == '/HEADER':
+                resposta += file_link
+            resposta += '</style>\n<script>\n'
+            resposta += 'window.addEventListener("DOMContentLoaded", function() {\n'
+            resposta += '  var audio = document.getElementById("myAudio");\n'
+            resposta += '  audio.play();\n'
+            resposta += '});\n'
+            resposta += '</script>\n</head>\n<body>\n<h1>You got...</h1>\n'
+            resposta += '<audio id="myAudio" controls autoplay>\n'
+            resposta += '<source src="audio.mp3" type="audio/mpeg">\n'
+            resposta += '</audio>\n</body>\n</html>'
+        elif caminho == '/HEADER':
             # Retorna o cabeçalho HTTP da requisição
-            response = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
-            response += request
-        elif path == '/info':
+            resposta = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
+            resposta += requisicoes
+        elif caminho == '/info':
             # Retorna informações sobre o servidor e o computador
-            response = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
-            response += '<h1>Informações sobre o servidor e o computador:</h1>\n'
-            response += f'Data: {datetime.datetime.now()}<br>'
-            response += f'Usuário: {os.getlogin()}<br>'
-            response += f'SO: {os.name}<br>'
-            response += f'Link: <a href="http://r.mtdv.me/wmyXd4o28f">r.mtdv.me/wmyXd4o28f</a><br>'
-        elif path == '/hello':
+            resposta = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
+            resposta += '<h1>Informacoes sobre o servidor e o computador:</h1>\n'
+            resposta += f'Data: {datetime.datetime.now()}<br>'
+            resposta += f'Usuário: {os.getlogin()}<br>'
+            resposta += f'SO: {os.name}<br>'
+        elif caminho == '/hello':
             # Responde com "hello"
-            response = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
-            response += 'hello\n'
+            resposta = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
+            resposta += 'hello\n'
         else:
             # Tenta ler o arquivo solicitado
             try:
-                with open(DIRECTORY + path, 'rb') as file:
+                with open(DIRECTORY + caminho, 'rb') as file:
                     file_data = file.read()
-                response = 'HTTP/1.1 200 OK\nContent-Type: application/octet-stream\n\n'
-                response_binary = bytes(response, 'utf-8') + file_data
+                resposta = 'HTTP/1.1 200 OK\nContent-Type: application/octet-stream\n\n'
+                response_binary = bytes(resposta, 'utf-8') + file_data
                 client_socket.sendall(response_binary)
                 client_socket.close()
                 return
             except FileNotFoundError:
-                response = 'HTTP/1.1 404 Not Found\nContent-Type: text/plain\n\n'
-                response += '404 Not Found\n'
+                resposta = 'HTTP/1.1 404 Not Found\nContent-Type: text/plain\n\n'
+                resposta += '404 Not Found\n'
     else:
-        response = 'HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\n\n'
-        response += '501 Not Implemented\n'
+        resposta = 'HTTP/1.1 501 Not Implemented\nContent-Type: text/plain\n\n'
+        resposta += '501 Not Implemented\n'
 
     # Envia a resposta ao cliente
-    response_bytes = bytes(response, 'utf-8')
+    response_bytes = bytes(resposta, 'utf-8')
     client_socket.sendall(response_bytes)
     client_socket.close()
 
 
 # Função principal para iniciar o servidor
-def run_server():
+def rodar_server():
     # Cria o socket do servidor
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -101,4 +100,4 @@ def run_server():
 
 
 if __name__ == '__main__':
-    run_server()
+    rodar_server()
