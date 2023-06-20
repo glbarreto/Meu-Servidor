@@ -4,8 +4,8 @@ import threading
 import datetime
 
 HOST = '172.20.192.1'
-PORT = 7000
-DIRECTORY = 'D:\\User\\Desktop\\2023-1\\Redes\\Descubra'
+PORT = 800
+DIRECTORY = 'scratch/convidado/Downloads/Meu-Servidor-main/Descubra/'
 
 def handle_request(client_socket, client_address):
     # Recebe a requisição do cliente
