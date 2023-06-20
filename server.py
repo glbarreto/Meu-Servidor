@@ -5,22 +5,19 @@ import datetime
 
 HOST = '172.20.192.1'
 PORT = 7000
-DIRECTORY = 'D:\\User\\Desktop\\2023-1\\Redes\\Descubra'  # Diretório que será servido
+DIRECTORY = 'D:\\User\\Desktop\\2023-1\\Redes\\Descubra'
 
-# Função para tratar as requisições dos clientes
 def handle_request(client_socket, client_address):
     # Recebe a requisição do cliente
     requisicoes = client_socket.recv(1024).decode('utf-8')
     print(f'Received request from {client_address[0]}:{client_address[1]}')
 
-    # Analisa a requisição para determinar o caminho solicitado
     request_parts = requisicoes.split(' ')
     metodo = request_parts[0]
     caminho = request_parts[1]
 
     if metodo == 'GET':
         if caminho == '/':
-            # Retorna a página HTML com o áudio MP3 e o trecho de JavaScript para reprodução automática
             resposta = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
             resposta += '<!DOCTYPE html>\n<html>\n<head>\n<title>Meu Servidor</title>\n<style>\n'
             arquivos = os.listdir(DIRECTORY)
@@ -43,18 +40,16 @@ def handle_request(client_socket, client_address):
             resposta += '<source src="audio.mp3" type="audio/mpeg">\n'
             resposta += '</audio>\n</body>\n</html>'
         elif caminho == '/HEADER':
-            # Retorna o cabeçalho HTTP da requisição
+            #Cabeçalho HTTP da requisição
             resposta = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
             resposta += requisicoes
         elif caminho == '/info':
-            # Retorna informações sobre o servidor e o computador
             resposta = 'HTTP/1.1 200 OK\nContent-Type: text/html\n\n'
             resposta += '<h1>Informacoes sobre o servidor e o computador:</h1>\n'
             resposta += f'Data: {datetime.datetime.now()}<br>'
             resposta += f'Usuário: {os.getlogin()}<br>'
             resposta += f'SO: {os.name}<br>'
         elif caminho == '/hello':
-            # Responde com "hello"
             resposta = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
             resposta += 'hello\n'
         else:
@@ -79,8 +74,6 @@ def handle_request(client_socket, client_address):
     client_socket.sendall(response_bytes)
     client_socket.close()
 
-
-# Função principal para iniciar o servidor
 def rodar_server():
     # Cria o socket do servidor
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
