@@ -30,7 +30,7 @@ def handle_request(client_socket, client_address):
                     file_link = f'<a href="/{urllib.parse.quote(file)}">{file}</a><br>'
                 response += file_link
             response += '<h1>You got...</h1>\n'
-            response += f'<audio controls autoplay><source src="/audio" type="audio/mpeg"></audio>'
+            response += f'<audio controls autoplay><source src="/audio" type="audio/mp3"></audio>'
         elif path == '/HEADER':
             response = 'HTTP/1.1 200 OK\nContent-Type: text/plain\n\n'
             response += request
